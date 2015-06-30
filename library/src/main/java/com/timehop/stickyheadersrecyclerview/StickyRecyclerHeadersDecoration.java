@@ -14,9 +14,6 @@ import com.timehop.stickyheadersrecyclerview.rendering.HeaderRenderer;
 import com.timehop.stickyheadersrecyclerview.util.LinearLayoutOrientationProvider;
 import com.timehop.stickyheadersrecyclerview.util.OrientationProvider;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration {
 
     private final StickyRecyclerHeadersAdapter mAdapter;
@@ -27,28 +24,40 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
     private final HeaderRenderer mRenderer;
     private final DimensionCalculator mDimensionCalculator;
     private HeaderPositionChangeListener headerListener;
-    private List<Rect> headersList = new ArrayList<>();
 
     // TODO: Consider passing in orientation to simplify orientation accounting within calculation
     public StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter) {
         this(adapter, new LinearLayoutOrientationProvider(), new DimensionCalculator());
     }
 
-    private StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter, OrientationProvider orientationProvider,
+    private StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter,
+                                            OrientationProvider orientationProvider,
                                             DimensionCalculator dimensionCalculator) {
-        this(adapter, orientationProvider, dimensionCalculator, new HeaderRenderer(orientationProvider),
+        this(adapter,
+                orientationProvider,
+                dimensionCalculator,
+                new HeaderRenderer(orientationProvider),
                 new HeaderViewCache(adapter, orientationProvider));
     }
 
-    private StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter, OrientationProvider orientationProvider,
-                                            DimensionCalculator dimensionCalculator, HeaderRenderer headerRenderer, HeaderProvider headerProvider) {
-        this(adapter, headerRenderer, orientationProvider, dimensionCalculator, headerProvider,
-                new HeaderPositionCalculator(adapter, headerProvider, orientationProvider,
-                        dimensionCalculator));
+    private StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter,
+                                            OrientationProvider orientationProvider,
+                                            DimensionCalculator dimensionCalculator,
+                                            HeaderRenderer headerRenderer,
+                                            HeaderProvider headerProvider) {
+        this(adapter,
+                headerRenderer,
+                orientationProvider,
+                dimensionCalculator,
+                headerProvider,
+                new HeaderPositionCalculator(adapter, headerProvider, orientationProvider, dimensionCalculator));
     }
 
-    private StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter, HeaderRenderer headerRenderer,
-                                            OrientationProvider orientationProvider, DimensionCalculator dimensionCalculator, HeaderProvider headerProvider,
+    private StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter,
+                                            HeaderRenderer headerRenderer,
+                                            OrientationProvider orientationProvider,
+                                            DimensionCalculator dimensionCalculator,
+                                            HeaderProvider headerProvider,
                                             HeaderPositionCalculator headerPositionCalculator) {
         mAdapter = adapter;
         mHeaderProvider = headerProvider;
@@ -91,7 +100,6 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
     public void onDrawOver(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
         super.onDrawOver(canvas, parent, state);
         mHeaderRects.clear();
-        headersList.clear();
 
         if (parent.getChildCount() <= 0 || mAdapter.getItemCount() <= 0) {
             return;
@@ -109,12 +117,12 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
                         itemView, hasStickyHeader(i, position));
                 mRenderer.drawHeader(parent, canvas, header, headerOffset);
                 mHeaderRects.put(position, headerOffset);
-                headersList.add(headerOffset);
+                if (headerListener != null) {
+                    headerListener.headerPositionChanged(mAdapter.getHeaderId(position), headerOffset);
+                }
             }
         }
-        if (headerListener != null) {
-            headerListener.headerPositionChanged(headersList);
-        }
+
     }
 
     private boolean hasStickyHeader(int listChildPosition, int indexInList) {
