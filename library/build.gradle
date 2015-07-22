@@ -1,12 +1,23 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.2.3'
+    }
+}
+
 apply plugin: 'com.android.library'
 
+ext.compileSdkVersionValue = 21
+ext.buildToolsVersionValue = '22.0.1'
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion as Integer
-    buildToolsVersion rootProject.ext.buildToolsVersion as String
+    compileSdkVersion compileSdkVersionValue
+    buildToolsVersion buildToolsVersionValue
 
     defaultConfig {
         minSdkVersion 14 as Integer
-        targetSdkVersion rootProject.ext.compileSdkVersion as Integer
+        targetSdkVersion compileSdkVersionValue
         versionCode 1 as Integer
         versionName "1.0.0" as String
     }
